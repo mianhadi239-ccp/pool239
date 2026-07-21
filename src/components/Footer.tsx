@@ -1,4 +1,4 @@
-import { LogoWhite } from "../assets";
+import ccpLogo from '../assets/img/ccplogo.png';
 
 /**
  * Site footer: dark background (bg-primary), logo link to home, dynamic year in copyright.
@@ -9,7 +9,7 @@ export default function Footer() {
     <footer className="bg-primary py-12">
       <div className="container mx-auto max-w-7xl text-white flex items-center gap-5 sm:justify-between flex-col sm:flex-row">
         <a href="/">
-          <LogoWhite />
+          <img src={ccpLogo} alt="CCP Logo" className="h-10 w-auto" />
         </a>
         <div className="flex flex-col items-center">
           <p>&copy; {new Date().getFullYear()}. All Reserved.</p>

@@ -1,26 +1,25 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Footer, Header, PageNotFound } from './components';
-import { Home, RoomDetails } from './pages';
+import { Home } from './pages';
+import PasswordGate from './components/PasswordGate';
 
 /**
- * Root app: router with Header/Footer and routes for Home, RoomDetails, and 404.
- * - BrowserRouter enables client-side routing (no full page reload on nav).
- * - future flags prepare for React Router v7 behavior (startTransition, relative splat paths).
- * - Header/Footer render on every route; Routes swap the main content by path.
+ * Root app wrapped in PasswordGate to enforce password authentication.
  */
 function App() {
   return (
-    <main className="">
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/room/:id" element={<RoomDetails />} />
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-        <Footer />
-      </BrowserRouter>
-    </main>
+    <PasswordGate>
+      <main className="">
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <Header />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
+          <Footer />
+        </BrowserRouter>
+      </main>
+    </PasswordGate>
   );
 }
 
