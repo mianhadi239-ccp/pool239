@@ -3,18 +3,23 @@ import { BookingRequest } from '../types/booking';
 
 export const ADMIN_EMAIL = 'mianhadi239@gmail.com';
 
+// Default EmailJS keys for production / Vercel fallback
+const DEFAULT_SERVICE_ID = 'service_08jihyp';
+const DEFAULT_TEMPLATE_ID = 'template_lk21mgb';
+const DEFAULT_PUBLIC_KEY = 'kfvmN_Z8Gpw1ZKMfo';
+
 export interface EmailDeliveryStatus {
   sent: boolean;
   message: string;
 }
 
 /**
- * Helper to check if valid EmailJS keys exist in environment
+ * Helper to check if valid EmailJS keys exist in environment or fallbacks
  */
 export const isEmailJSConfigured = (): boolean => {
-  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
-  const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
-  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
+  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || DEFAULT_SERVICE_ID;
+  const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || DEFAULT_TEMPLATE_ID;
+  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || DEFAULT_PUBLIC_KEY;
 
   return Boolean(
     serviceId &&
@@ -26,14 +31,14 @@ export const isEmailJSConfigured = (): boolean => {
 };
 
 /**
- * Sends EXACTLY ONE email notification per booking request
+ * Sends EXACTLY ONE email notification per booking request (Works on Vercel & Localhost)
  */
 export const sendBookingNotificationEmail = async (
   booking: BookingRequest
 ): Promise<EmailDeliveryStatus> => {
-  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
-  const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
-  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
+  const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || DEFAULT_SERVICE_ID;
+  const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || DEFAULT_TEMPLATE_ID;
+  const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || DEFAULT_PUBLIC_KEY;
 
   // Comprehensive template parameters matching any EmailJS template variable names
   const emailParams = {
