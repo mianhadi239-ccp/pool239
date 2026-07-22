@@ -80,8 +80,19 @@ export default function PoolBooking() {
       return;
     }
 
-    if (!email.trim() || !email.includes("@")) {
-      alert("Please enter a valid email address so we can send your confirmation email.");
+    if (!email.trim()) {
+      alert("Email is compulsory! Please enter your email address to continue.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      alert("Please enter a valid email address (e.g. name@example.com) so we can send your confirmation.");
+      return;
+    }
+
+    if (people > 13) {
+      alert("Maximum allowed number of people is 13.");
       return;
     }
 
@@ -226,7 +237,9 @@ export default function PoolBooking() {
               className="readonly-input"
             />
 
-            <label>Customer Name</label>
+            <label>
+              Customer Name <span className="text-rose-500 font-bold">*</span>
+            </label>
             {isAccepted ? (
               <input
                 type="text"
@@ -251,7 +264,9 @@ export default function PoolBooking() {
               />
             )}
 
-            <label>Customer Email</label>
+            <label>
+              Customer Email <span className="text-rose-500 font-bold">*</span>
+            </label>
             {isAccepted ? (
               <input
                 type="email"
@@ -269,7 +284,7 @@ export default function PoolBooking() {
             ) : (
               <input
                 type="email"
-                placeholder="Enter customer email (e.g. john@example.com)"
+                placeholder="Enter customer email (required)"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="name-input"
@@ -277,13 +292,13 @@ export default function PoolBooking() {
               />
             )}
 
-            <label>Number of People</label>
+            <label>Number of People (Max 13)</label>
             <select
               value={people}
               onChange={(e) => setPeople(Number(e.target.value))}
               disabled={isAccepted}
             >
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].map((num) => (
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map((num) => (
                 <option key={num} value={num}>
                   {num} {num === 1 ? 'Person' : 'People'}
                 </option>
