@@ -133,7 +133,7 @@ export default function PoolBooking() {
       <div className="hero-content-container">
         
         <div className="hero-header-text">
-          <span className="subtitle">Just Enjoy & Relax</span>
+          <span className="subtitle"></span>
           <h1 className="title">Book Your Private Pool Session</h1>
         </div>
 

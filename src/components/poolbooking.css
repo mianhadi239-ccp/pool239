@@ -809,3 +809,244 @@
     font-size: 12px;
   }
 }
+
+/* ============================================
+   TABLET / IPAD RESPONSIVE STYLES (768px - 1023px)
+   ============================================ */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hero-pool-booking {
+    padding-top: 130px;
+    padding-bottom: 70px;
+  }
+
+  .booking-container {
+    grid-template-columns: 1fr;
+    max-width: 680px;
+    margin: 0 auto;
+    gap: 25px;
+  }
+
+  .hero-header-text .title {
+    font-size: 42px;
+  }
+
+  .availability,
+  .booking-card {
+    padding: 28px;
+  }
+
+  .react-calendar__tile {
+    min-height: 48px;
+  }
+}
+
+/* ============================================
+   MOBILE PHONE RESPONSIVE STYLES (< 768px)
+   ============================================ */
+@media (max-width: 767px) {
+  .hero-pool-booking {
+    padding-top: 115px;
+    padding-bottom: 50px;
+    min-height: auto;
+  }
+
+  .hero-content-container {
+    padding: 0 12px;
+  }
+
+  .hero-header-text {
+    margin-bottom: 20px;
+  }
+
+  .hero-header-text .subtitle {
+    font-size: 12px;
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+  }
+
+  .hero-header-text .title {
+    font-size: 26px;
+    letter-spacing: 1px;
+  }
+
+  .booking-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .availability,
+  .booking-card {
+    padding: 18px 14px;
+    border-radius: 12px;
+  }
+
+  .availability h2,
+  .booking-card h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+  }
+
+  .legend {
+    gap: 12px;
+    font-size: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+  }
+
+  .green,
+  .yellow,
+  .red {
+    width: 10px;
+    height: 10px;
+    margin-right: 6px;
+  }
+
+  .react-calendar__navigation {
+    height: 44px;
+    margin-bottom: 10px;
+  }
+
+  .react-calendar__navigation button {
+    font-size: 13px;
+    min-width: 32px;
+  }
+
+  .react-calendar__month-view__weekdays {
+    font-size: 10px;
+    padding-bottom: 4px;
+  }
+
+  .react-calendar__tile {
+    padding: 4px 1px;
+    font-size: 12px;
+    min-height: 44px;
+  }
+
+  .booked-name,
+  .pending-name {
+    font-size: 7px;
+    padding: 1px 2px;
+    margin-top: 1px;
+    max-width: 100%;
+    letter-spacing: 0;
+  }
+
+  .booking-card label {
+    font-size: 12px;
+    margin-top: 12px;
+  }
+
+  .booking-card input,
+  .booking-card select {
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+  }
+
+  .price {
+    margin-top: 18px;
+    padding: 14px 16px;
+  }
+
+  .price span {
+    font-size: 12px;
+  }
+
+  .price h1 {
+    font-size: 20px;
+  }
+
+  .book-btn {
+    padding: 14px;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+  }
+
+  /* Invoice Modal on Mobile */
+  .invoice-overlay {
+    padding: 10px;
+  }
+
+  .invoice-modal {
+    padding: 20px 16px;
+    max-height: 92vh;
+    border-radius: 14px;
+  }
+
+  .invoice-logo {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .invoice-company-name {
+    font-size: 18px;
+  }
+
+  .invoice-badge {
+    font-size: 10px;
+    padding: 3px 10px;
+    letter-spacing: 2px;
+  }
+
+  .invoice-payment-notice {
+    padding: 12px 14px;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .invoice-notice-icon {
+    font-size: 22px;
+  }
+
+  .invoice-payment-notice h3 {
+    font-size: 13px;
+  }
+
+  .invoice-payment-notice p {
+    font-size: 12px;
+  }
+
+  .invoice-info-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .invoice-table th,
+  .invoice-table td {
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+
+  .invoice-item-title {
+    font-size: 12px;
+  }
+
+  .invoice-item-sub {
+    font-size: 10px;
+  }
+
+  .invoice-grand-total {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .invoice-grand-total span:last-child {
+    font-size: 17px;
+  }
+
+  .invoice-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .invoice-btn-cancel,
+  .invoice-btn-confirm {
+    width: 100%;
+    padding: 12px;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+}
