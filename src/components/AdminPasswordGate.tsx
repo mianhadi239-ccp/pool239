@@ -15,7 +15,7 @@ export default function AdminPasswordGate({ children }: AdminPasswordGateProps) 
   const [error, setError] = useState('');
 
   // Admin portal access password
-  const ADMIN_PASSWORD = 'admin239$';
+  const ADMIN_PASSWORD = 'mian239$';
 
   useEffect(() => {
     const checkToken = async () => {
