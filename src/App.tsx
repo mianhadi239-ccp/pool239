@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Footer, Header, PageNotFound } from './components';
-import { Home } from './pages';
+import { Home, Admin } from './pages';
 import PasswordGate from './components/PasswordGate';
 
 /**
@@ -14,6 +14,7 @@ function App() {
           <Header />
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
           <Footer />

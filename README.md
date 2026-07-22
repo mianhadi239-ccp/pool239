@@ -152,7 +152,7 @@ Example (optional, not used in current code):
 ```bash
 hotel-booking-2/
 ├── public/                 # Static assets (favicon, fonts, _redirects)
-│   ├── vite.svg
+│   ├── ccp.svg
 │   ├── fonts/              # Self-hosted fonts (.woff2)
 │   └── _redirects           # SPA fallback for deployment (e.g. Vercel)
 ├── src/

@@ -23,7 +23,9 @@ import Slider3 from './img/heroSlider/3.jpg';
 
 import LogoDarkSvg from './img/logo-dark.svg?react';
 import LogoWhiteSvg from './img/logo-white.svg?react';
+import ccpLogo from './img/ccplogo.png';
 
+export { ccpLogo };
 export const LogoDark = LogoDarkSvg;
 export const LogoWhite = LogoWhiteSvg;
 

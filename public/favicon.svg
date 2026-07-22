@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <g stroke="#0a0a0a" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Top Right Yellow Circle -->
+    <circle cx="270" cy="140" r="70" fill="#f59e0b" />
+    <!-- Bottom Right Blue Circle -->
+    <circle cx="260" cy="270" r="75" fill="#3b82f6" />
+    <!-- Main Pink Circle -->
+    <circle cx="160" cy="190" r="105" fill="#ec4899" />
+  </g>
+</svg>
