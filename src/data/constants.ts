@@ -22,21 +22,21 @@ export const kidsList: { name: string }[] = [
 export const sliderData: SliderSlide[] = [
   {
     id: 1,
-    title: 'Your Luxury Hotel For Vacation',
+    title: 'Your Ultimate Pool Experience',
     bg: images.Slider1,
-    btnNext: 'See our rooms',
+    btnNext: 'Book now',
   },
   {
     id: 2,
-    title: 'Feel Relax & Enjoy Your Luxuriousness',
+    title: 'Relax & Enjoy World-Class Pool Facilities',
     bg: images.Slider2,
-    btnNext: 'See our rooms',
+    btnNext: 'Book now',
   },
   {
     id: 3,
-    title: 'Your Luxury Hotel For Vacation',
+    title: 'Your Premium Destination For Pool Booking',
     bg: images.Slider3,
-    btnNext: 'See our rooms',
+    btnNext: 'Book now',
   },
 ];
 
