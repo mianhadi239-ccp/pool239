@@ -9,6 +9,7 @@ import { getStoredBookings, addBookingRequest, subscribeToBookings } from "../li
 
 interface InvoiceData {
   customerName: string;
+  customerEmail: string;
   date: string;
   day: string;
   people: number;
@@ -22,6 +23,7 @@ export default function PoolBooking() {
   const [requests, setRequests] = useState<BookingRequest[]>([]);
   const [date, setDate] = useState(new Date());
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [people, setPeople] = useState(5);
   const [hours, setHours] = useState(2);
   const [showInvoice, setShowInvoice] = useState(false);
@@ -45,7 +47,7 @@ export default function PoolBooking() {
   const isAccepted = !!acceptedBooking;
   const isPending = !!pendingBooking;
 
-  const ratePerPersonPerHour = 300;
+  const ratePerPersonPerHour = 600;
   const price = people * hours * ratePerPersonPerHour;
 
   // Get start of today (00:00:00) to allow today's date but disable past dates
@@ -78,6 +80,11 @@ export default function PoolBooking() {
       return;
     }
 
+    if (!email.trim() || !email.includes("@")) {
+      alert("Please enter a valid email address so we can send your confirmation email.");
+      return;
+    }
+
     if (isAccepted) {
       alert("This date is already accepted and fully booked.");
       return;
@@ -86,6 +93,7 @@ export default function PoolBooking() {
     // Show the invoice modal with 'Request & Pay'
     setInvoiceData({
       customerName: name.trim(),
+      customerEmail: email.trim(),
       date: formattedDate,
       day,
       people,
@@ -106,6 +114,7 @@ export default function PoolBooking() {
       date: invoiceData.date,
       day: invoiceData.day,
       customerName: invoiceData.customerName,
+      customerEmail: invoiceData.customerEmail,
       people: invoiceData.people,
       hours: invoiceData.hours,
       ratePerPersonPerHour: invoiceData.ratePerPersonPerHour,
@@ -116,6 +125,7 @@ export default function PoolBooking() {
     setShowInvoice(false);
     setInvoiceData(null);
     setName("");
+    setEmail("");
   };
 
   const cancelInvoice = () => {
@@ -237,6 +247,32 @@ export default function PoolBooking() {
               />
             )}
 
+            <label>Customer Email</label>
+            {isAccepted ? (
+              <input
+                type="email"
+                value={acceptedBooking.customerEmail || 'n/a'}
+                readOnly
+                className="readonly-input booked-customer-name"
+              />
+            ) : isPending ? (
+              <input
+                type="email"
+                value={pendingBooking.customerEmail || 'n/a'}
+                readOnly
+                className="readonly-input pending-customer-name"
+              />
+            ) : (
+              <input
+                type="email"
+                placeholder="Enter customer email (e.g. john@example.com)"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="name-input"
+                required
+              />
+            )}
+
             <label>Number of People</label>
             <select
               value={people}
@@ -323,6 +359,7 @@ export default function PoolBooking() {
               <div className="invoice-info-block">
                 <h4>Bill To</h4>
                 <p className="invoice-customer-name">{invoiceData.customerName}</p>
+                <p className="text-xs text-gray-500 font-mono mt-0.5">{invoiceData.customerEmail}</p>
               </div>
               <div className="invoice-info-block">
                 <h4>Booking Details</h4>
@@ -403,8 +440,14 @@ export default function PoolBooking() {
             <p className="text-sm text-gray-600 mb-4 font-secondary">
               Your request <strong className="text-gray-900 font-mono">{submittedInvoiceNumber}</strong> has been received and is currently <span className="text-amber-600 font-semibold uppercase">Pending Admin Approval</span>.
             </p>
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800 mb-6 text-left">
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800 mb-4 text-left">
               💡 <strong>Next Step:</strong> The pool administrator will review and accept your booking request in the Admin Panel.
+            </div>
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-800 mb-6 text-left flex items-start gap-2.5">
+              <span className="text-base">📧</span>
+              <div>
+                <strong>Email Notification Dispatched:</strong> An alert email has been sent to <strong>mianhadi239@gmail.com</strong> and a confirmation copy to your email address.
+              </div>
             </div>
             <button
               onClick={() => setSubmittedInvoiceNumber(null)}

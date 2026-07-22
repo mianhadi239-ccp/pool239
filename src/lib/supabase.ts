@@ -23,6 +23,7 @@ export interface DatabaseBookingRow {
   id: string;
   invoice_number: string;
   customer_name: string;
+  customer_email?: string;
   booking_date: string;
   day_of_week: string;
   people: number;
@@ -40,6 +41,7 @@ export const mapRowToBooking = (row: DatabaseBookingRow): BookingRequest => {
     id: row.id,
     invoiceNumber: row.invoice_number,
     customerName: row.customer_name,
+    customerEmail: row.customer_email || 'n/a',
     date: row.booking_date,
     day: row.day_of_week,
     people: row.people,
@@ -58,6 +60,7 @@ export const mapBookingToRow = (
   return {
     invoice_number: booking.invoiceNumber,
     customer_name: booking.customerName,
+    customer_email: booking.customerEmail,
     booking_date: booking.date,
     day_of_week: booking.day,
     people: booking.people,

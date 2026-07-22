@@ -225,6 +225,11 @@ export default function AdminPanel({ onLogout }: AdminPanelProps) {
                         <div className="font-semibold text-gray-900 text-base">
                           {request.customerName}
                         </div>
+                        {request.customerEmail && (
+                          <div className="text-xs text-amber-700 font-mono flex items-center gap-1 mt-0.5">
+                            ✉️ {request.customerEmail}
+                          </div>
+                        )}
                         <div className="text-xs font-mono text-gray-500 mt-0.5">
                           {request.invoiceNumber}
                         </div>

@@ -1,5 +1,6 @@
 import { BookingRequest, BookingStatus } from '../types/booking';
 import { supabase, isSupabaseConfigured, mapRowToBooking, mapBookingToRow, DatabaseBookingRow } from './supabase';
+import { sendBookingNotificationEmail } from './emailService';
 
 const STORAGE_KEY = 'ccp_pool_bookings_v1';
 const EVENT_NAME = 'ccp_bookings_updated';
@@ -12,6 +13,7 @@ const INITIAL_BOOKINGS: BookingRequest[] = [
     date: '2026-07-23',
     day: 'Thursday',
     customerName: 'John Doe',
+    customerEmail: 'john.doe@example.com',
     people: 4,
     hours: 2,
     ratePerPersonPerHour: 300,
@@ -25,6 +27,7 @@ const INITIAL_BOOKINGS: BookingRequest[] = [
     date: '2026-07-25',
     day: 'Saturday',
     customerName: 'Sarah Smith',
+    customerEmail: 'sarah.smith@example.com',
     people: 6,
     hours: 3,
     ratePerPersonPerHour: 300,
@@ -38,6 +41,7 @@ const INITIAL_BOOKINGS: BookingRequest[] = [
     date: '2026-07-28',
     day: 'Tuesday',
     customerName: 'Mike Johnson',
+    customerEmail: 'mike.j@example.com',
     people: 5,
     hours: 2,
     ratePerPersonPerHour: 300,
@@ -51,6 +55,7 @@ const INITIAL_BOOKINGS: BookingRequest[] = [
     date: '2026-08-01',
     day: 'Saturday',
     customerName: 'David Lee',
+    customerEmail: 'david.lee@example.com',
     people: 8,
     hours: 4,
     ratePerPersonPerHour: 300,
@@ -161,6 +166,11 @@ export const addBookingRequest = async (
       console.error('Failed to insert into Supabase:', e);
     }
   }
+
+  // Trigger real-time email notification to mianhadi239@gmail.com
+  sendBookingNotificationEmail(newBooking).catch((err) => {
+    console.error('Email notification error:', err);
+  });
 
   return newBooking;
 };

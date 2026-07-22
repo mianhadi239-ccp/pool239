@@ -6,6 +6,7 @@ export interface BookingRequest {
   date: string; // YYYY-MM-DD
   day: string;
   customerName: string;
+  customerEmail: string;
   people: number;
   hours: number;
   ratePerPersonPerHour: number;
