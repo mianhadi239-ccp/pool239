@@ -181,27 +181,31 @@ export default function PoolBooking() {
                   setDate(value);
                 }
               }}
-              tileClassName={({ date }) => {
-                const current = format(date, "yyyy-MM-dd");
+              tileClassName={({ date: tileDate }) => {
+                const current = format(tileDate, "yyyy-MM-dd");
                 const accepted = requests.some((b) => b.date === current && b.status === "accepted");
                 const pending = requests.some((b) => b.date === current && b.status === "pending");
                 
-                if (accepted) return "booked";
-                if (pending) return "pending-tile";
-                return "available";
+                let tileClass = accepted ? "booked" : pending ? "pending-tile" : "available";
+                if (current === formattedDate) {
+                  tileClass += " selected-date-tile";
+                }
+                return tileClass;
               }}
-              tileContent={({ date, view }) => {
+              tileContent={({ date: tileDate, view }) => {
                 if (view === "month") {
-                  const current = format(date, "yyyy-MM-dd");
+                  const current = format(tileDate, "yyyy-MM-dd");
+                  const isSelected = current === formattedDate;
                   const accepted = requests.find((b) => b.date === current && b.status === "accepted");
                   const pending = requests.find((b) => b.date === current && b.status === "pending");
                   
-                  if (accepted) {
-                    return <div className="booked-name">{accepted.customerName}</div>;
-                  }
-                  if (pending) {
-                    return <div className="pending-name">Req: {pending.customerName}</div>;
-                  }
+                  return (
+                    <>
+                      {accepted && <div className="booked-name">{accepted.customerName}</div>}
+                      {!accepted && pending && <div className="pending-name">Req: {pending.customerName}</div>}
+                      {isSelected && <div className="selected-badge">✓ Selected</div>}
+                    </>
+                  );
                 }
                 return null;
               }}

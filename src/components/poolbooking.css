@@ -351,6 +351,29 @@
   border-radius: 6px;
 }
 
+/* Selected Date Highlight in Calendar */
+.selected-date-tile {
+  box-shadow: 0 0 0 3px #a37d4c, 0 4px 12px rgba(163, 125, 76, 0.4) !important;
+  position: relative;
+  z-index: 10;
+  font-weight: 700 !important;
+  transform: scale(1.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.selected-badge {
+  font-size: 8px;
+  background: #a37d4c;
+  color: white;
+  font-weight: 700;
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
 /* Booked vs Available Styles */
 .booked {
   background: #fee2e2 !important;
