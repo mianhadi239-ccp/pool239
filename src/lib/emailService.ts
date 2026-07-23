@@ -31,7 +31,7 @@ export const isEmailJSConfigured = (): boolean => {
 };
 
 /**
- * Sends email notifications for booking requests and status updates (Admin + Customer)
+ * Sends EXACTLY ONE single email notification per booking dispatch
  */
 export const sendBookingNotificationEmail = async (
   booking: BookingRequest
@@ -45,10 +45,9 @@ export const sendBookingNotificationEmail = async (
     return { sent: false, message: 'EmailJS keys missing.' };
   }
 
-  const isStatusUpdate = booking.status !== 'pending';
-
-  const baseParams = {
+  const emailParams = {
     // Recipient & Reply targets
+    to_email: ADMIN_EMAIL,
     admin_email: ADMIN_EMAIL,
     customer_email: booking.customerEmail,
     reply_to: booking.customerEmail,
@@ -59,6 +58,7 @@ export const sendBookingNotificationEmail = async (
     customer_name: booking.customerName,
     name: booking.customerName,
     from_name: booking.customerName,
+    to_name: 'Pool Administrator',
 
     // Booking Itemization
     invoice_number: booking.invoiceNumber,
@@ -73,63 +73,31 @@ export const sendBookingNotificationEmail = async (
     status: booking.status.toUpperCase(),
     requested_at: new Date().toLocaleString(),
     admin_link: `${window.location.origin}/admin`,
-    subject: isStatusUpdate
-      ? `🏊 Booking ${booking.invoiceNumber} Update: ${booking.status.toUpperCase()}`
-      : `🏊 New Booking Request: ${booking.invoiceNumber} - ${booking.customerName}`,
-    message: isStatusUpdate
-      ? `Your Pool Booking Request (${booking.invoiceNumber}) status has been updated to: ${booking.status.toUpperCase()}.\n\n` +
-        `Customer Name: ${booking.customerName}\n` +
-        `Date: ${booking.date} (${booking.day})\n` +
-        `Guests: ${booking.people} People\n` +
-        `Duration: ${booking.hours} Hours\n` +
-        `Total Price: Rs. ${booking.totalPrice.toLocaleString()}\n` +
-        `Status: ${booking.status.toUpperCase()}`
-      : `New Pool Booking Request Received!\n\n` +
-        `Invoice #: ${booking.invoiceNumber}\n` +
-        `Customer Name: ${booking.customerName}\n` +
-        `Customer Email: ${booking.customerEmail}\n` +
-        `Date: ${booking.date} (${booking.day})\n` +
-        `Guests: ${booking.people} People\n` +
-        `Duration: ${booking.hours} Hours\n` +
-        `Total Price: Rs. ${booking.totalPrice.toLocaleString()}\n` +
-        `Status: PENDING ADMIN APPROVAL\n\n` +
-        `Admin Portal: ${window.location.origin}/admin`,
+    subject: `🏊 New Booking Request: ${booking.invoiceNumber} - ${booking.customerName}`,
+    message: `New Pool Booking Request Received!\n\n` +
+      `Invoice #: ${booking.invoiceNumber}\n` +
+      `Customer Name: ${booking.customerName}\n` +
+      `Customer Email: ${booking.customerEmail}\n` +
+      `Date: ${booking.date} (${booking.day})\n` +
+      `Guests: ${booking.people} People\n` +
+      `Duration: ${booking.hours} Hours\n` +
+      `Total Price: Rs. ${booking.totalPrice.toLocaleString()}\n` +
+      `Status: PENDING ADMIN APPROVAL\n\n` +
+      `Admin Portal: ${window.location.origin}/admin`,
   };
 
-  console.log(`[Email Service] Dispatching email for invoice ${booking.invoiceNumber}...`);
+  console.log(`[Email Service] Dispatching single email for invoice ${booking.invoiceNumber}...`);
 
-  let adminSuccess = false;
-  let customerSuccess = false;
-
-  // 1. Dispatch to Admin (mianhadi239@gmail.com)
   try {
-    const adminParams = { ...baseParams, to_email: ADMIN_EMAIL, to_name: 'Pool Administrator' };
-    const response = await emailjs.send(serviceId, templateId, adminParams, publicKey);
-    console.log('[Email Service] Admin EmailJS Success:', response.status, response.text);
-    adminSuccess = response.status === 200;
-  } catch (err) {
-    console.error('[Email Service] Admin EmailJS error:', err);
-  }
-
-  // 2. Dispatch to Customer (if valid email provided and not identical to admin)
-  if (
-    booking.customerEmail &&
-    booking.customerEmail !== 'n/a' &&
-    booking.customerEmail.includes('@') &&
-    booking.customerEmail.toLowerCase() !== ADMIN_EMAIL.toLowerCase()
-  ) {
-    try {
-      const customerParams = { ...baseParams, to_email: booking.customerEmail, to_name: booking.customerName };
-      const response = await emailjs.send(serviceId, templateId, customerParams, publicKey);
-      console.log('[Email Service] Customer EmailJS Success:', response.status, response.text);
-      customerSuccess = response.status === 200;
-    } catch (err) {
-      console.error('[Email Service] Customer EmailJS error:', err);
+    const response = await emailjs.send(serviceId, templateId, emailParams, publicKey);
+    console.log('[Email Service] EmailJS Single Dispatch Success:', response.status, response.text);
+    if (response.status === 200) {
+      return { sent: true, message: 'Email sent successfully via EmailJS.' };
     }
+  } catch (err) {
+    console.error('[Email Service] EmailJS dispatch error:', err);
+    return { sent: false, message: `EmailJS error: ${err}` };
   }
 
-  return {
-    sent: adminSuccess || customerSuccess,
-    message: `Admin email sent: ${adminSuccess}, Customer email sent: ${customerSuccess}`,
-  };
+  return { sent: false, message: 'Email dispatch completed.' };
 };

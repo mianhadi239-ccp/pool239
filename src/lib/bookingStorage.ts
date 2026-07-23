@@ -178,20 +178,13 @@ export const addBookingRequest = async (
 };
 
 /**
- * Updates booking status (accepted/rejected) in Supabase and notifies customer/admin
+ * Updates booking status (accepted/rejected) in Supabase
  */
 export const updateBookingStatus = async (id: string, status: BookingStatus): Promise<void> => {
   const current = getStoredBookings();
   const target = current.find((b) => b.id === id || b.invoiceNumber === id);
   const updated = current.map((b) => (b.id === id || b.invoiceNumber === id ? { ...b, status } : b));
   broadcastUpdate(updated);
-
-  if (target) {
-    const updatedTarget: BookingRequest = { ...target, status };
-    sendBookingNotificationEmail(updatedTarget).catch((err) => {
-      console.error('Status update email error:', err);
-    });
-  }
 
   if (isSupabaseConfigured() && supabase && target) {
     try {
