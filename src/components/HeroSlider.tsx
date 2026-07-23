@@ -32,9 +32,8 @@ export default function HeroSlider() {
             </button>
           </div>
           <div className="absolute top-0 w-full h-full">
-            <img className="object-cover h-full w-full" src={bg} alt="" />
+            <img className="object-cover h-full w-full opacity-100" src={bg} alt="" />
           </div>
-          <div className="absolute w-full h-full bg-black/70" />
         </SwiperSlide>
       ))}
     </Swiper>

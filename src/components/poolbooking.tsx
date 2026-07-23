@@ -244,10 +244,11 @@ export default function PoolBooking() {
   };
 
   return (
-    <div
-      className="hero-pool-booking"
-      style={{ backgroundImage: `url(${images.Slider3})` }}
-    >
+    <div className="hero-pool-booking">
+      <div
+        className="hero-pool-booking-bg"
+        style={{ backgroundImage: `url(${images.Slider3})` }}
+      ></div>
       <div className="hero-overlay"></div>
       
       <div className="hero-content-container">
@@ -262,7 +263,7 @@ export default function PoolBooking() {
           {/* Left Column: Pool Availability Calendar */}
           <div className="availability">
 
-            <h2>Pool Availability</h2>
+            <h2> Pool Availability</h2>
 
             <div className="legend">
 
