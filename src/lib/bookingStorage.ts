@@ -9,7 +9,7 @@ const EVENT_NAME = 'ccp_bookings_updated';
 const INITIAL_BOOKINGS: BookingRequest[] = [
   {
     id: 'req-1',
-    invoiceNumber: 'INV-7X9K-3A1B',
+    invoiceNumber: 'INV-7091',
     date: '2026-07-23',
     day: 'Thursday',
     customerName: 'John Doe',
@@ -23,7 +23,7 @@ const INITIAL_BOOKINGS: BookingRequest[] = [
   },
   {
     id: 'req-2',
-    invoiceNumber: 'INV-8Y2M-9C4D',
+    invoiceNumber: 'INV-8204',
     date: '2026-07-25',
     day: 'Saturday',
     customerName: 'Sarah Smith',
@@ -37,7 +37,7 @@ const INITIAL_BOOKINGS: BookingRequest[] = [
   },
   {
     id: 'req-3',
-    invoiceNumber: 'INV-9Z4P-1E5F',
+    invoiceNumber: 'INV-9415',
     date: '2026-07-28',
     day: 'Tuesday',
     customerName: 'Mike Johnson',
@@ -51,7 +51,7 @@ const INITIAL_BOOKINGS: BookingRequest[] = [
   },
   {
     id: 'req-4',
-    invoiceNumber: 'INV-1A5Q-6F7G',
+    invoiceNumber: 'INV-1567',
     date: '2026-08-01',
     day: 'Saturday',
     customerName: 'David Lee',

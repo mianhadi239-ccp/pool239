@@ -29,6 +29,113 @@ export default function PoolBooking() {
   const [showInvoice, setShowInvoice] = useState(false);
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
   const [submittedInvoiceNumber, setSubmittedInvoiceNumber] = useState<string | null>(null);
+  const [copiedText, setCopiedText] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [isValidatingEmail, setIsValidatingEmail] = useState(false);
+
+  const handleCopy = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedText(label);
+    setTimeout(() => setCopiedText(null), 2000);
+  };
+
+  const TYPO_MAP: Record<string, string> = {
+    'gmai.com': 'gmail.com',
+    'gamil.com': 'gmail.com',
+    'gmial.com': 'gmail.com',
+    'gmaill.com': 'gmail.com',
+    'gmai.co': 'gmail.com',
+    'yaho.com': 'yahoo.com',
+    'yahou.com': 'yahoo.com',
+    'yaho.co': 'yahoo.com',
+    'hotmial.com': 'hotmail.com',
+    'hotmai.com': 'hotmail.com',
+    'outlok.com': 'outlook.com',
+    'outloo.com': 'outlook.com',
+    'icloud.co': 'icloud.com',
+  };
+
+  const validateEmail = async (val: string): Promise<boolean> => {
+    const trimmed = val.trim().toLowerCase();
+    if (!trimmed) {
+      setEmailError("Email address is required.");
+      return false;
+    }
+
+    // 1. Basic format regex
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(trimmed)) {
+      setEmailError("Please enter a valid email address (e.g. user@example.com).");
+      return false;
+    }
+
+    const domain = trimmed.split('@')[1];
+
+    // 2. Common typo detection
+    if (TYPO_MAP[domain]) {
+      const suggested = trimmed.split('@')[0] + '@' + TYPO_MAP[domain];
+      setEmailError(`Invalid domain '${domain}'. Did you mean '${suggested}'?`);
+      return false;
+    }
+
+    // 3. DNS MX/A Domain Existence Verification via Google Public DNS
+    try {
+      setIsValidatingEmail(true);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+      const res = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        // Status 3 = NXDOMAIN (Domain does not exist)
+        if (data.Status === 3) {
+          setEmailError(`The domain '${domain}' does not exist. Please check your email.`);
+          setIsValidatingEmail(false);
+          return false;
+        }
+
+        // If no MX records, check for A records (host exists or can take mail)
+        if ((!data.Answer || data.Answer.length === 0) && data.Status === 0) {
+          const aRes = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=A`);
+          const aData = await aRes.json();
+          if (aData.Status === 3 || (!aData.Answer || aData.Answer.length === 0)) {
+            setEmailError(`The domain '${domain}' is invalid or cannot receive emails.`);
+            setIsValidatingEmail(false);
+            return false;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("DNS domain check skipped or timed out:", err);
+    } finally {
+      setIsValidatingEmail(false);
+    }
+
+    setEmailError(null);
+    return true;
+  };
+
+  const handleEmailChange = (val: string) => {
+    setEmail(val);
+    if (emailError) {
+      // Re-validate format locally
+      const trimmed = val.trim().toLowerCase();
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (emailRegex.test(trimmed)) {
+        setEmailError(null);
+      }
+    }
+  };
+
+  const handleEmailBlur = async () => {
+    if (email.trim()) {
+      await validateEmail(email);
+    }
+  };
 
   useEffect(() => {
     setRequests(getStoredBookings());
@@ -57,15 +164,13 @@ export default function PoolBooking() {
     return today;
   };
 
-  // Generate a random invoice number
+  // Generate a short, readable invoice number (e.g. INV-4829)
   const generateInvoiceNumber = () => {
-    const prefix = "INV";
-    const timestamp = Date.now().toString(36).toUpperCase();
-    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `${prefix}-${timestamp}-${random}`;
+    const num = Math.floor(1000 + Math.random() * 9000);
+    return `INV-${num}`;
   };
 
-  const handleRequestBooking = () => {
+  const handleRequestBooking = async () => {
     const today = getTodayStart();
     const selectedDateTime = new Date(date);
     selectedDateTime.setHours(0, 0, 0, 0);
@@ -80,14 +185,8 @@ export default function PoolBooking() {
       return;
     }
 
-    if (!email.trim()) {
-      alert("Email is compulsory! Please enter your email address to continue.");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
-      alert("Please enter a valid email address (e.g. name@example.com) so we can send your confirmation.");
+    const isEmailValid = await validateEmail(email);
+    if (!isEmailValid) {
       return;
     }
 
@@ -282,14 +381,27 @@ export default function PoolBooking() {
                 className="readonly-input pending-customer-name"
               />
             ) : (
-              <input
-                type="email"
-                placeholder="Enter customer email (required)"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="name-input"
-                required
-              />
+              <div className="email-input-wrapper">
+                <input
+                  type="email"
+                  placeholder="Enter customer email (required)"
+                  value={email}
+                  onChange={(e) => handleEmailChange(e.target.value)}
+                  onBlur={handleEmailBlur}
+                  className={`name-input ${emailError ? 'input-field-error' : ''}`}
+                  required
+                />
+                {isValidatingEmail && (
+                  <p className="field-validating-message">
+                    🔍 Verifying email domain availability...
+                  </p>
+                )}
+                {!isValidatingEmail && emailError && (
+                  <p className="field-error-message">
+                    ⚠️ {emailError}
+                  </p>
+                )}
+              </div>
             )}
 
             <label>Number of People (Max 13)</label>
@@ -424,6 +536,66 @@ export default function PoolBooking() {
               <div className="invoice-total-row invoice-grand-total">
                 <span>Total Amount Due</span>
                 <span>Rs. {invoiceData.totalPrice}</span>
+              </div>
+            </div>
+
+            {/* Payment Accounts Section */}
+            <div className="invoice-payment-methods">
+              <div className="invoice-payment-header">
+                <h4>💳 Official Payment Accounts</h4>
+                <span className="payment-instruction-badge">Pay via Easypaisa or Bank</span>
+              </div>
+
+              <div className="payment-options-grid">
+                {/* Option 1: Easypaisa */}
+                <div className="payment-card easypaisa-card">
+                  <div className="payment-card-top">
+                    <span className="payment-provider-badge easypaisa-pill">Easypaisa</span>
+                    <span className="payment-method-tag">Mobile Wallet</span>
+                  </div>
+                  <div className="payment-card-row">
+                    <span className="pay-label">Account Title:</span>
+                    <span className="pay-val font-semibold">Abdul Hadi</span>
+                  </div>
+                  <div className="payment-card-row">
+                    <span className="pay-label">Mobile Number:</span>
+                    <div className="pay-val-group">
+                      <span className="pay-val font-mono font-bold text-emerald-700">03318666239</span>
+                      <button
+                        type="button"
+                        className="copy-btn"
+                        onClick={() => handleCopy("03318666239", "easypaisa")}
+                      >
+                        {copiedText === "easypaisa" ? "Copied! ✓" : "Copy"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Option 2: Bank Makramah */}
+                <div className="payment-card bank-card">
+                  <div className="payment-card-top">
+                    <span className="payment-provider-badge bank-pill">Bank Makramah</span>
+                    <span className="payment-method-tag">Bank Transfer</span>
+                  </div>
+                  <div className="payment-card-row">
+                    <span className="pay-label">Account Title:</span>
+                    <span className="pay-val font-semibold">Abdul Hadi</span>
+                  </div>
+                  <div className="payment-card-row">
+                    <span className="pay-label">Account Number:</span>
+                    <div className="pay-val-group">
+                      <span className="pay-val font-mono font-bold text-blue-800">0601586016000001</span>
+                      <button
+                        type="button"
+                        className="copy-btn"
+                        onClick={() => handleCopy("0601586016000001", "bank")}
+                      >
+                        {copiedText === "bank" ? "Copied! ✓" : "Copy"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
