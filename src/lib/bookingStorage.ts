@@ -144,6 +144,8 @@ export const addBookingRequest = async (
   const updated = [newBooking, ...current];
   broadcastUpdate(updated);
 
+  let finalBooking = newBooking;
+
   if (isSupabaseConfigured() && supabase) {
     try {
       const row = mapBookingToRow(request);
@@ -160,42 +162,46 @@ export const addBookingRequest = async (
         // Replace optimistic entry with server response
         const syncUpdated = current.map((b) => (b.invoiceNumber === createdBooking.invoiceNumber ? createdBooking : b));
         broadcastUpdate(syncUpdated);
-        return createdBooking;
+        finalBooking = createdBooking;
       }
     } catch (e) {
       console.error('Failed to insert into Supabase:', e);
     }
   }
 
-  // Trigger real-time email notification to mianhadi239@gmail.com
-  sendBookingNotificationEmail(newBooking).catch((err) => {
+  // Always trigger email notifications (Admin & Customer)
+  sendBookingNotificationEmail(finalBooking).catch((err) => {
     console.error('Email notification error:', err);
   });
 
-  return newBooking;
+  return finalBooking;
 };
 
 /**
- * Updates booking status (accepted/rejected) in Supabase
+ * Updates booking status (accepted/rejected) in Supabase and notifies customer/admin
  */
 export const updateBookingStatus = async (id: string, status: BookingStatus): Promise<void> => {
   const current = getStoredBookings();
-  const updated = current.map((b) => (b.id === id ? { ...b, status } : b));
+  const target = current.find((b) => b.id === id || b.invoiceNumber === id);
+  const updated = current.map((b) => (b.id === id || b.invoiceNumber === id ? { ...b, status } : b));
   broadcastUpdate(updated);
 
-  if (isSupabaseConfigured() && supabase) {
-    try {
-      // Find invoice or ID
-      const target = current.find((b) => b.id === id);
-      if (target) {
-        const { error } = await supabase
-          .from('pool_bookings')
-          .update({ status })
-          .or(`id.eq.${id},invoice_number.eq.${target.invoiceNumber}`);
+  if (target) {
+    const updatedTarget: BookingRequest = { ...target, status };
+    sendBookingNotificationEmail(updatedTarget).catch((err) => {
+      console.error('Status update email error:', err);
+    });
+  }
 
-        if (error) {
-          console.error('Supabase status update error:', error);
-        }
+  if (isSupabaseConfigured() && supabase && target) {
+    try {
+      const { error } = await supabase
+        .from('pool_bookings')
+        .update({ status })
+        .or(`id.eq.${id},invoice_number.eq.${target.invoiceNumber}`);
+
+      if (error) {
+        console.error('Supabase status update error:', error);
       }
     } catch (e) {
       console.error('Failed to update status in Supabase:', e);
